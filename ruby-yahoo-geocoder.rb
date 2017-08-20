@@ -33,6 +33,7 @@
 
 require 'rest-client'
 require 'rexml/document'
+require 'csv'
 
 # base URI
 baseurl = 'https://map.yahooapis.jp/geocode/V1/geoCoder'
@@ -61,29 +62,30 @@ ofile = File.open(ARGV[1], 'w')
 puts "Start"
 
 begin
-  File.open(ARGV[0]) do |file|
-    file.each_line do |line|
-      pline = line.gsub(/\n|[	 ].*$/, '')
-      url = baseurl + '?' + 'appid=' + appid + '&al=' + search +
-            '&ar=' + level + '&recursive=' + recursive +
-            '&output=' + format +
-            '&query=' + pline
-      eurl = URI.escape(url)
-      puts 'Processing: ' + pline
-      RestClient.get(eurl) { |response, request, result, &block|
-        case response.code
-        when 200
-          doc = REXML::Document.new response.body
-          coordinates = doc.elements['YDF/Feature[1]/Geometry/Coordinates'].text()
-          tsv = coordinates.gsub(',', '	')
-          otsv = pline + '	' + tsv
-          ofile.puts otsv
-        else
-          p 'HTTP error code: ' + response.code
-        end
-      }
+  cvsdata = CSV.read(ARGV[0], col_sep: "\t", headers: true)
+  cvsdata.each do |row|
+    code = row[0]
+    addr = row[2]
+    url = baseurl + '?' + 'appid=' + appid + '&al=' + search +
+          '&ar=' + level + '&recursive=' + recursive +
+          '&output=' + format +
+          '&query=' + addr
+    eurl = URI.escape(url)
+    puts 'Processing: ' + addr
+    RestClient.get(eurl) { |response, request, result, &block|
+      case response.code
+      when 200
+        doc = REXML::Document.new response.body
+        coordinates = doc.elements['YDF/Feature[1]/Geometry/Coordinates'].text()
+        tsv = coordinates.gsub(',', '	')
+        otsv = code + '	' + tsv
+        ofile.puts otsv
+      else
+        puts 'HTTP error code: '
+        puts response.code
+      end
+    }
     end
-  end
 rescue SystemCallError => e
   puts %Q(class=[#{e.class}] message=[#{e.message}])
 rescue IOError => e
