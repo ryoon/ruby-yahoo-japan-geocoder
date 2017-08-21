@@ -54,8 +54,8 @@ recursive = 'true'
 format = 'xml'
 
 # Fallback coordinate
-fallback_latitude = 0
-fallback_longitude = 0
+fallback_latitude = '0'
+fallback_longitude = '0'
 
 ofile = File.open(ARGV[1], 'w')
 
@@ -76,7 +76,13 @@ begin
       case response.code
       when 200
         doc = REXML::Document.new response.body
-        coordinates = doc.elements['YDF/Feature[1]/Geometry/Coordinates'].text()
+        coordinates = doc.elements['YDF/Feature[1]/Geometry/Coordinates']
+        if (coordinates != nil)
+          pcoordinates = coordinates.text()
+          tsv = pcoordinates.gsub(',', '	')
+        else
+          tsv = fallback_latitude + '	' + fallback_longitude
+        end
         tsv = coordinates.gsub(',', '	')
         otsv = code + '	' + tsv
         ofile.puts otsv
