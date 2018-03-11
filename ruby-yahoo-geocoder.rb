@@ -44,7 +44,7 @@ appid = 'YOUR_APPLICATION_ID' # Required
 # Address search level
 search = '4'
 
-# address range: 'le'means 'less than or equal'
+# address range: 'le' means 'less than or equal'
 level = 'le'
 
 # Fall back to upper search level
