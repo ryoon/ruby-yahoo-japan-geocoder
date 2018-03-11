@@ -83,7 +83,6 @@ begin
         else
           tsv = fallback_latitude + '	' + fallback_longitude
         end
-        tsv = coordinates.gsub(',', '	')
         otsv = code + '	' + tsv
         ofile.puts otsv
       else
