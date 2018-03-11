@@ -4,6 +4,7 @@ API specification is described at
 https://developer.yahoo.co.jp/webapi/map/openlocalplatform/v1/geocoder.html .
 
 Usage:
+
 Prepare input TSV file in UTF-8 without BOM.
 
 	$ cd /usr/pkgsrc/www/ruby-rest-client
